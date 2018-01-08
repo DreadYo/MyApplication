@@ -8,12 +8,18 @@ import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,6 +44,7 @@ public class Map2Activity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Button btnFindPath;
     private EditText etOrigin, etDestination;
+    private String strOrigin, strDestination;
 
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
@@ -54,6 +61,48 @@ public class Map2Activity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         addListenerOnButton();
+//////
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("TEST", "Place: " + place.getName());
+                etOrigin.setText(place.getName().toString());
+                Log.i("TEST","getAddress: " + place.getAddress());
+                Log.i("TEST","toString: " + place.toString());
+                Log.i("TEST","getAttributions: " + place.getAttributions());
+                Log.i("TEST","getLocale: " + place.getLocale());
+                Log.i("TEST","getPhoneNumber: " + place.getPhoneNumber());
+                Log.i("TEST","getLatLng: " + place.getLatLng());
+
+//                Place: Nemiga 3 Shopping Mall
+//                getAddress: Ulitsa Nemiga 3, Minsk, Belarus
+//                toString: PlaceEntity{id=ChIJq00kouvP20YRaLORPv2YyS8, placeTypes=[84, 1013, 34], locale=null, name=Nemiga 3 Shopping Mall, address=Ulitsa Nemiga 3, Minsk, Belarus, phoneNumber=+375 44 566-50-63, latlng=lat/lng: (53.903945500000006,27.552444899999998), viewport=LatLngBounds{southwest=lat/lng: (53.902735819708504,27.550826519708497), northeast=lat/lng: (53.9054337802915,27.5535244802915)}, websiteUri=http://nemiga3.by/, isPermanentlyClosed=false, priceLevel=-1}
+//                getAttributions: null
+//                getLocale: null
+//                getPhoneNumber: +375 44 566-50-63
+//                getLatLng: lat/lng: (53.903945500000006,27.552444899999998)
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("TEST", "An error occurred: " + status);
+            }
+        });
+
+        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+//                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
+                .setCountry("BY")
+                .build();
+
+        autocompleteFragment.setFilter(typeFilter);
+
+//////////
+
 
     }
 
